@@ -1,5 +1,5 @@
 [package]
 
-name = "rust-nibble-vec"
+name = "nibble_vec"
 version = "0.0.1"
 authors = ["Michael Sproul <micsproul@gmail.com>"]
