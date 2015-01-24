@@ -1,15 +1,15 @@
 /// A data-structure for storing a sequence of 4-bit values.
 ///
-/// Values are stored in a Vec<u8>, with two values per byte.
+/// Values are stored in a `Vec<u8>`, with two values per byte.
 ///
-/// Values at *even* indices are stored in the most-significant half of their byte,
+/// Values at even indices are stored in the most-significant half of their byte,
 /// while values at odd indices are stored in the least-significant half.
 ///
 /// Imagine a vector of MSB bytes, and you'll be right.
 ///
 /// n = [_ _ | _ _ | _ _]
 pub struct NibbleVec {
-    length: uint,
+    length: usize,
     data: Vec<u8>
 }
 
@@ -34,7 +34,7 @@ impl NibbleVec {
     }
 
     /// Get the number of elements stored in the vector.
-    pub fn len(&self) -> uint {
+    pub fn len(&self) -> usize {
         self.length
     }
 
@@ -42,8 +42,8 @@ impl NibbleVec {
     ///
     /// Guaranteed to be a value in the interval [0, 15].
     ///
-    /// *Panics* if `idx >= self.len()`.
-    pub fn get(&self, idx: uint) -> u8 {
+    /// **Panics** if `idx >= self.len()`.
+    pub fn get(&self, idx: usize) -> u8 {
         if idx >= self.length {
             panic!("attempted access beyond vector end. len is {}, index is {}", self.length, idx);
         }
@@ -74,8 +74,8 @@ impl NibbleVec {
     /// All elements at or following the given index are returned in a new `NibbleVec`,
     /// with exactly `idx` elements remaining in this vector.
     ///
-    /// *Panics* if `idx > self.len()`.
-    pub fn split(&mut self, idx: uint) -> NibbleVec {
+    /// **Panics** if `idx > self.len()`.
+    pub fn split(&mut self, idx: usize) -> NibbleVec {
         if idx > self.length {
             panic!("attempted to split past vector end. len is {}, index is {}", self.length, idx);
         } else if idx == self.length {
@@ -89,7 +89,7 @@ impl NibbleVec {
 
     /// Split function for even *indices*.
     #[inline(always)]
-    fn split_odd(&mut self, idx: uint) -> NibbleVec {
+    fn split_odd(&mut self, idx: usize) -> NibbleVec {
         let tail_vec_size = (self.length - idx) / 2;
         let mut tail = NibbleVec::from_byte_vec(Vec::with_capacity(tail_vec_size));
 
@@ -111,7 +111,7 @@ impl NibbleVec {
 
     /// Split function for odd *indices*.
     #[inline(always)]
-    fn split_even(&mut self, idx: uint) -> NibbleVec {
+    fn split_even(&mut self, idx: usize) -> NibbleVec {
         // Avoid allocating a temporary vector by copying all the bytes in order, then popping them.
         let tail_vec_size = (self.length - idx) / 2;
         let mut tail = NibbleVec::from_byte_vec(Vec::with_capacity(tail_vec_size));
@@ -137,7 +137,7 @@ impl NibbleVec {
     /// self.data[end - 1]. The second half of the last entry is included
     /// if include_last is true.
     #[inline(always)]
-    fn overlap_copy(&self, start: uint, end: uint, vec: &mut Vec<u8>, length: &mut uint, include_last: bool) {
+    fn overlap_copy(&self, start: usize, end: usize, vec: &mut Vec<u8>, length: &mut usize, include_last: bool) {
         // Copy up to the first half of the last byte.
         for i in range(start, end - 1) {
             // The first half is the second half of the old entry.
@@ -181,8 +181,8 @@ impl NibbleVec {
     }
 }
 
-impl Equiv<[u8]> for NibbleVec {
-    fn equiv(&self, other: &[u8]) -> bool {
+impl PartialEq<[u8]> for NibbleVec {
+    fn eq(&self, other: &[u8]) -> bool {
         if other.len() != self.len() {
             return false;
         }
@@ -240,13 +240,13 @@ mod test {
     }
 
     fn split_test(  nibble_vec: &NibbleVec,
-                    idx: uint,
+                    idx: usize,
                     first: Vec<u8>,
                     second: Vec<u8>) {
         let mut init = nibble_vec.clone();
         let tail = init.split(idx);
-        assert!(init.equiv(first.as_slice()));
-        assert!(tail.equiv(second.as_slice()));
+        assert!(init == first[]);
+        assert!(tail == second[]);
     }
 
     #[test]
@@ -270,7 +270,7 @@ mod test {
     fn join_test(vec1: &NibbleVec, vec2: &NibbleVec, result: Vec<u8>) {
         let mut joined = vec1.clone();
         joined.join(vec2);
-        assert!(joined.equiv(result.as_slice()));
+        assert!(joined == result[]);
     }
 
     #[test]
