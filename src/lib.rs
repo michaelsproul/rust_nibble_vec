@@ -1,3 +1,5 @@
+use std::fmt::{self, Debug, Formatter};
+
 /// A data-structure for storing a sequence of 4-bit values.
 ///
 /// Values are stored in a `Vec<u8>`, with two values per byte.
@@ -202,6 +204,21 @@ impl Clone for NibbleVec {
             length: self.length,
             data: self.data.clone()
         }
+    }
+}
+
+impl Debug for NibbleVec {
+    fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
+        try!(write!(fmt, "NibbleVec ["));
+
+        if self.len() > 0 {
+            try!(write!(fmt, "{}", self.get(0)));
+        }
+
+        for i in range(1, self.len()) {
+            try!(write!(fmt, ", {}", self.get(i)));
+        }
+        write!(fmt, "]")
     }
 }
 
