@@ -10,6 +10,9 @@ use std::fmt::{self, Debug, Formatter};
 /// Imagine a vector of MSB bytes, and you'll be right.
 ///
 /// n = [_ _ | _ _ | _ _]
+///
+/// # Invariants
+/// * If the length is odd, then the second half of the last byte must be 0.
 pub struct NibbleVec {
     length: usize,
     data: Vec<u8>
@@ -54,7 +57,7 @@ impl NibbleVec {
             // If the index is even, take the first (most significant) half of the stored byte.
             0 => self.data[vec_idx] >> 4,
             // If the index is odd, take the second (least significant) half.
-            _ => self.data[vec_idx] & 0x0f
+            _ => self.data[vec_idx] & 0x0F
         }
     }
 
@@ -66,6 +69,11 @@ impl NibbleVec {
             self.data.push(val << 4);
         } else {
             let vec_len = self.data.len();
+
+            // Zero the second half of the last byte just to be safe.
+            self.data[vec_len - 1] &= 0xF0;
+
+            // Write the new value.
             self.data[vec_len - 1] |= val & 0x0F;
         }
         self.length += 1;
@@ -89,13 +97,14 @@ impl NibbleVec {
         }
     }
 
-    /// Split function for even *indices*.
+    /// Split function for odd *indices*.
     #[inline(always)]
     fn split_odd(&mut self, idx: usize) -> NibbleVec {
         let tail_vec_size = (self.length - idx) / 2;
         let mut tail = NibbleVec::from_byte_vec(Vec::with_capacity(tail_vec_size));
 
-        // If the new length is odd, get the trailing half-byte from the old vector.
+        // Perform an overlap copy, copying the last nibble of the original vector only if
+        // the length of the new tail is *odd*.
         let tail_length = self.length - idx;
         let take_last = tail_length % 2 == 1;
         self.overlap_copy(idx / 2, self.data.len(), &mut tail.data, &mut tail.length, take_last);
@@ -105,13 +114,16 @@ impl NibbleVec {
             self.data.pop();
         }
 
+        // Zero the second half of the index byte so as to maintain the last-nibble invariant.
+        self.data[idx / 2] &= 0xF0;
+
         // Update the length of the first NibbleVec.
         self.length = idx;
 
         tail
     }
 
-    /// Split function for odd *indices*.
+    /// Split function for even *indices*.
     #[inline(always)]
     fn split_even(&mut self, idx: usize) -> NibbleVec {
         // Avoid allocating a temporary vector by copying all the bytes in order, then popping them.
@@ -284,6 +296,7 @@ mod test {
         split_test(&odd_length, 3, vec![11, 10, 9], vec![]);
     }
 
+    /// Join vec2 onto vec1 and ensure that the results matches the one expected.
     fn join_test(vec1: &NibbleVec, vec2: &NibbleVec, result: Vec<u8>) {
         let mut joined = vec1.clone();
         joined.join(vec2);
