@@ -321,4 +321,22 @@ mod test {
         join_test(&v2, &v2, vec![11, 10, 9, 11, 10, 9]);
         join_test(&v2, &NibbleVec::new(), vec![11, 10, 9]);
     }
+
+    /// Ensure that the last nibble is zeroed before reuse.
+    #[test]
+    fn memory_reuse() {
+        let mut vec = NibbleVec::new();
+        vec.push(10);
+        vec.push(1);
+
+        // Pushing.
+        vec.split(1);
+        vec.push(2);
+        assert_eq!(vec.get(1), 2);
+
+        // Joining.
+        vec.split(1);
+        vec.join(&NibbleVec::from_byte_vec(vec![1 << 4 | 3, 5 << 4]));
+        assert_eq!(vec.get(1), 1);
+    }
 }
