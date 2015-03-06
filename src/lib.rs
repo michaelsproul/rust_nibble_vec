@@ -172,17 +172,17 @@ impl NibbleVec {
     }
 
     /// Append another nibble vector.
-    pub fn join(&mut self, other: &NibbleVec) {
+    pub fn join(mut self, other: &NibbleVec) -> NibbleVec {
         // If the length is even, we can append directly.
         if self.length % 2 == 0 {
             self.length += other.length;
             self.data.push_all(other.data.as_slice());
-            return;
+            return self;
         }
 
         // If the other vector is empty, bail out.
         if other.len() == 0 {
-            return;
+            return self;
         }
 
         // If the length is odd, we have to perform an overlap copy.
@@ -192,6 +192,8 @@ impl NibbleVec {
         // Copy the rest of the vector using an overlap copy.
         let take_last = other.len() % 2 == 0;
         other.overlap_copy(0, other.data.len(), &mut self.data, &mut self.length, take_last);
+
+        self
     }
 }
 
@@ -298,8 +300,7 @@ mod test {
 
     /// Join vec2 onto vec1 and ensure that the results matches the one expected.
     fn join_test(vec1: &NibbleVec, vec2: &NibbleVec, result: Vec<u8>) {
-        let mut joined = vec1.clone();
-        joined.join(vec2);
+        let joined = vec1.clone().join(vec2);
         assert!(joined == result[..]);
     }
 
@@ -336,7 +337,7 @@ mod test {
 
         // Joining.
         vec.split(1);
-        vec.join(&NibbleVec::from_byte_vec(vec![1 << 4 | 3, 5 << 4]));
+        vec = vec.join(&NibbleVec::from_byte_vec(vec![1 << 4 | 3, 5 << 4]));
         assert_eq!(vec.get(1), 1);
     }
 }
