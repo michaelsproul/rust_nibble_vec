@@ -274,8 +274,8 @@ mod test {
                     second: Vec<u8>) {
         let mut init = nibble_vec.clone();
         let tail = init.split(idx);
-        assert!(init == first[]);
-        assert!(tail == second[]);
+        assert!(init == first[..]);
+        assert!(tail == second[..]);
     }
 
     #[test]
@@ -300,7 +300,7 @@ mod test {
     fn join_test(vec1: &NibbleVec, vec2: &NibbleVec, result: Vec<u8>) {
         let mut joined = vec1.clone();
         joined.join(vec2);
-        assert!(joined == result[]);
+        assert!(joined == result[..]);
     }
 
     #[test]
