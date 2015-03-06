@@ -197,6 +197,15 @@ impl NibbleVec {
     }
 }
 
+impl PartialEq<NibbleVec> for NibbleVec {
+    fn eq(&self, other: &NibbleVec) -> bool {
+        self.length == other.length &&
+        self.data == other.data
+    }
+}
+
+impl Eq for NibbleVec {}
+
 impl PartialEq<[u8]> for NibbleVec {
     fn eq(&self, other: &[u8]) -> bool {
         if other.len() != self.len() {
