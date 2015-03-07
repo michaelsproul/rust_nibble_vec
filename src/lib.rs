@@ -1,3 +1,5 @@
+#![feature(core, collections)]
+
 use std::fmt::{self, Debug, Formatter};
 
 /// A data-structure for storing a sequence of 4-bit values.
