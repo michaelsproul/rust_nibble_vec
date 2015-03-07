@@ -127,7 +127,11 @@ impl NibbleVec {
     #[inline(always)]
     fn split_even(&mut self, idx: usize) -> NibbleVec {
         // Avoid allocating a temporary vector by copying all the bytes in order, then popping them.
-        let tail_vec_size = (self.length - idx) / 2;
+
+        // Possible to prove: l_d - ⌊i / 2⌋ = ⌊(l_v - i + 1) / 2⌋
+        //  where l_d = self.data.len()
+        //        l_v = self.length
+        let tail_vec_size = (self.length - idx + 1) / 2;
         let mut tail = NibbleVec::from_byte_vec(Vec::with_capacity(tail_vec_size));
 
         // Copy the bytes.
@@ -136,7 +140,7 @@ impl NibbleVec {
         }
 
         // Pop the same bytes.
-        for _ in range(0, tail_vec_size) {
+        for _ in range(idx / 2, self.data.len()) {
             self.data.pop();
         }
 
