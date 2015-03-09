@@ -9,12 +9,11 @@ use std::fmt::{self, Debug, Formatter};
 /// Values at even indices are stored in the most-significant half of their byte,
 /// while values at odd indices are stored in the least-significant half.
 ///
-/// Imagine a vector of MSB bytes, and you'll be right.
+/// Imagine a vector of [MSB][msb-wiki] first bytes, and you'll be right.
 ///
 /// n = [_ _ | _ _ | _ _]
 ///
-/// # Invariants
-/// * If the length is odd, then the second half of the last byte must be 0.
+/// [msb-wiki]: http://en.wikipedia.org/wiki/Most_significant_bit
 pub struct NibbleVec {
     length: usize,
     data: Vec<u8>
@@ -177,7 +176,7 @@ impl NibbleVec {
         }
     }
 
-    /// Append another nibble vector.
+    /// Append another nibble vector whilst consuming this vector.
     pub fn join(mut self, other: &NibbleVec) -> NibbleVec {
         // If the length is even, we can append directly.
         if self.length % 2 == 0 {
@@ -212,6 +211,8 @@ impl PartialEq<NibbleVec> for NibbleVec {
 
 impl Eq for NibbleVec {}
 
+/// Compare a NibbleVec and a slice of bytes *element-by-element*.
+/// Bytes are **not** interpreted as two NibbleVec entries.
 impl PartialEq<[u8]> for NibbleVec {
     fn eq(&self, other: &[u8]) -> bool {
         if other.len() != self.len() {
