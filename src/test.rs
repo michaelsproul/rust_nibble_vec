@@ -83,6 +83,12 @@ fn join_odd_length() {
     join_test(&v2, &NibbleVec::new(), vec![11, 10, 9]);
 }
 
+#[test]
+fn clone() {
+    let v1 = v8_7_6_5().clone();
+    assert_eq!(v1.len(), 4);
+}
+
 /// Ensure that the last nibble is zeroed before reuse.
 #[test]
 fn memory_reuse() {

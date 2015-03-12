@@ -17,6 +17,7 @@ use std::fmt::{self, Debug, Formatter};
 /// n = [_ _ | _ _ | _ _]
 ///
 /// [msb-wiki]: http://en.wikipedia.org/wiki/Most_significant_bit
+#[derive(Clone)]
 pub struct NibbleVec {
     length: usize,
     data: Vec<u8>
@@ -228,15 +229,6 @@ impl PartialEq<[u8]> for NibbleVec {
             }
         }
         true
-    }
-}
-
-impl Clone for NibbleVec {
-    fn clone(&self) -> NibbleVec {
-        NibbleVec {
-            length: self.length,
-            data: self.data.clone()
-        }
     }
 }
 
