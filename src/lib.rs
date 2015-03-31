@@ -1,4 +1,4 @@
-#![feature(core, collections)]
+#![feature(collections)]
 
 #[cfg(test)]
 mod test;
@@ -115,7 +115,7 @@ impl NibbleVec {
         self.overlap_copy(idx / 2, self.data.len(), &mut tail.data, &mut tail.length, take_last);
 
         // Remove the copied bytes, being careful to skip the idx byte.
-        for _ in range(idx / 2 + 1, self.data.len()) {
+        for _ in (idx / 2 + 1) .. self.data.len() {
             self.data.pop();
         }
 
@@ -137,15 +137,16 @@ impl NibbleVec {
         //  where l_d = self.data.len()
         //        l_v = self.length
         let tail_vec_size = (self.length - idx + 1) / 2;
+        let half_idx = idx / 2;
         let mut tail = NibbleVec::from_byte_vec(Vec::with_capacity(tail_vec_size));
 
         // Copy the bytes.
-        for i in range(idx / 2, self.data.len()) {
+        for i in half_idx .. self.data.len() {
             tail.data.push(self.data[i]);
         }
 
         // Pop the same bytes.
-        for _ in range(idx / 2, self.data.len()) {
+        for _ in half_idx .. self.data.len() {
             self.data.pop();
         }
 
@@ -162,7 +163,7 @@ impl NibbleVec {
     #[inline(always)]
     fn overlap_copy(&self, start: usize, end: usize, vec: &mut Vec<u8>, length: &mut usize, include_last: bool) {
         // Copy up to the first half of the last byte.
-        for i in range(start, end - 1) {
+        for i in start .. (end - 1) {
             // The first half is the second half of the old entry.
             let first_half = self.data[i] & 0x0f;
 
@@ -185,7 +186,7 @@ impl NibbleVec {
         // If the length is even, we can append directly.
         if self.length % 2 == 0 {
             self.length += other.length;
-            self.data.push_all(other.data.as_slice());
+            self.data.push_all(&other.data[..]);
             return self;
         }
 
@@ -240,7 +241,7 @@ impl Debug for NibbleVec {
             try!(write!(fmt, "{}", self.get(0)));
         }
 
-        for i in range(1, self.len()) {
+        for i in 1 .. self.len() {
             try!(write!(fmt, ", {}", self.get(i)));
         }
         write!(fmt, "]")
