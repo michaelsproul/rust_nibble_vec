@@ -1,5 +1,3 @@
-#![feature(collections)]
-
 #[cfg(test)]
 mod test;
 
@@ -186,7 +184,7 @@ impl NibbleVec {
         // If the length is even, we can append directly.
         if self.length % 2 == 0 {
             self.length += other.length;
-            self.data.push_all(&other.data[..]);
+            self.data.extend(other.data.clone());
             return self;
         }
 
