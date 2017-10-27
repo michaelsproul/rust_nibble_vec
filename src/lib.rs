@@ -15,7 +15,7 @@ use std::fmt::{self, Debug, Formatter};
 /// n = [_ _ | _ _ | _ _]
 ///
 /// [msb-wiki]: http://en.wikipedia.org/wiki/Most_significant_bit
-#[derive(Clone)]
+#[derive(Clone, Default)]
 pub struct NibbleVec {
     length: usize,
     data: Vec<u8>
@@ -44,6 +44,11 @@ impl NibbleVec {
     /// Get the number of elements stored in the vector.
     pub fn len(&self) -> usize {
         self.length
+    }
+
+    /// Returns `true` if the nibble vector has a length of 0.
+    pub fn is_empty(&self) -> bool {
+        self.data.is_empty()
     }
 
     /// Fetch a single entry from the vector.
@@ -189,7 +194,7 @@ impl NibbleVec {
         }
 
         // If the other vector is empty, bail out.
-        if other.len() == 0 {
+        if other.is_empty() {
             return self;
         }
 
@@ -214,8 +219,8 @@ impl PartialEq<NibbleVec> for NibbleVec {
 
 impl Eq for NibbleVec {}
 
-/// Compare a NibbleVec and a slice of bytes *element-by-element*.
-/// Bytes are **not** interpreted as two NibbleVec entries.
+/// Compare a `NibbleVec` and a slice of bytes *element-by-element*.
+/// Bytes are **not** interpreted as two `NibbleVec` entries.
 impl PartialEq<[u8]> for NibbleVec {
     fn eq(&self, other: &[u8]) -> bool {
         if other.len() != self.len() {
@@ -235,7 +240,7 @@ impl Debug for NibbleVec {
     fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
         try!(write!(fmt, "NibbleVec ["));
 
-        if self.len() > 0 {
+        if !self.is_empty() {
             try!(write!(fmt, "{}", self.get(0)));
         }
 
