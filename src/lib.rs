@@ -42,6 +42,18 @@ impl NibbleVec {
         }
     }
 
+    /// Returns a byte slice of the nibble vector's contents.
+    pub fn as_bytes(&self) -> &[u8] {
+        &self.data[..]
+    }
+
+    /// Converts a nibble vector into a byte vector.
+    ///
+    /// This consumes the nibble vector, so we do not need to copy its contents.
+    pub fn into_bytes(self) -> Vec<u8> {
+        self.data
+    }
+
     /// Get the number of elements stored in the vector.
     pub fn len(&self) -> usize {
         self.length

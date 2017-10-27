@@ -131,3 +131,17 @@ fn into() {
         assert_eq!(v, v2);
     }
 }
+
+#[test]
+fn as_bytes() {
+    let v = vec![243, 2, 3, 251, 5, 6, 7, 8, 255];
+    let n = NibbleVec::from(&v[..]);
+    assert_eq!(&v[..], n.as_bytes());
+}
+
+#[test]
+fn into_bytes() {
+    let v = vec![243, 2, 3, 251, 5, 6, 7, 8, 255];
+    let n = NibbleVec::from(&v[..]);
+    assert_eq!(v, n.into_bytes());
+}
