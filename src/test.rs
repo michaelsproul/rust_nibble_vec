@@ -106,3 +106,28 @@ fn memory_reuse() {
     vec = vec.join(&NibbleVec::from_byte_vec(vec![1 << 4 | 3, 5 << 4]));
     assert_eq!(vec.get(1), 1);
 }
+
+#[test]
+fn from() {
+    let v = vec![243, 2, 3, 251, 5, 6, 7, 8, 255];
+    let n = NibbleVec::from_byte_vec(v.clone());
+    let n2 = NibbleVec::from(&v[..]);
+    assert_eq!(n, n2);
+    let n3 = NibbleVec::from(v);
+    assert_eq!(n, n3);
+}
+
+#[test]
+fn into() {
+    let v = vec![243, 2, 3, 251, 5, 6, 7, 8, 255];
+    {
+        let n = NibbleVec::from_byte_vec(v.clone());
+        let v2: Vec<u8> = n.into();
+        assert_eq!(v, v2);
+    }
+    {
+        let n = NibbleVec::from_byte_vec(v.clone());
+        let v2: Vec<u8> = (&n).into();
+        assert_eq!(v, v2);
+    }
+}

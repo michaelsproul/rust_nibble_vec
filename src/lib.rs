@@ -1,6 +1,7 @@
 #[cfg(test)]
 mod test;
 
+use std::convert::{From, Into};
 use std::fmt::{self, Debug, Formatter};
 
 /// A data-structure for storing a sequence of 4-bit values.
@@ -248,5 +249,29 @@ impl Debug for NibbleVec {
             try!(write!(fmt, ", {}", self.get(i)));
         }
         write!(fmt, "]")
+    }
+}
+
+impl From<Vec<u8>> for NibbleVec {
+    fn from(v: Vec<u8>) -> NibbleVec {
+        NibbleVec::from_byte_vec(v)
+    }
+}
+
+impl<'a> From<&'a [u8]> for NibbleVec {
+    fn from(v: &[u8]) -> NibbleVec {
+        NibbleVec::from_byte_vec(v.into())
+    }
+}
+
+impl Into<Vec<u8>> for NibbleVec {
+    fn into(self) -> Vec<u8> {
+        self.data
+    }
+}
+
+impl<'a> Into<Vec<u8>> for &'a NibbleVec {
+    fn into(self) -> Vec<u8> {
+        self.data.clone()
     }
 }
