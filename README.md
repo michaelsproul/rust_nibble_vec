@@ -9,7 +9,7 @@ Wraps a `Vec<u8>`, providing safe and memory-efficient storage of 4-bit values.
 
 In terms of supported operations, the structure behaves kind of like a fixed length array, in that insertions into the middle of the vector are difficult (and unimplemented at present).
 
-# Usage
+## Usage
 
 This code is available on the Rust package host:
 
@@ -22,6 +22,12 @@ You can use it in your own projects by adding `nibble_vec` as a dependency in yo
 nibble_vec = "0.0.3"
 ```
 
-# License
+## Documentation
 
-MIT License. Copyright (c) Michael Sproul 2015.
+API documentation is available here:
+
+https://docs.rs/nibble_vec
+
+## License
+
+MIT License. Copyright © Michael Sproul and contributors 2015-2017.
