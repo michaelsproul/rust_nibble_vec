@@ -19,7 +19,7 @@ use std::fmt::{self, Debug, Formatter};
 #[derive(Clone, Default)]
 pub struct NibbleVec {
     length: usize,
-    data: Vec<u8>
+    data: Vec<u8>,
 }
 
 impl NibbleVec {
@@ -27,7 +27,7 @@ impl NibbleVec {
     pub fn new() -> NibbleVec {
         NibbleVec {
             length: 0,
-            data: Vec::new()
+            data: Vec::new(),
         }
     }
 
@@ -36,10 +36,7 @@ impl NibbleVec {
     /// Each byte is split into two 4-bit entries (MSB, LSB).
     pub fn from_byte_vec(vec: Vec<u8>) -> NibbleVec {
         let length = 2 * vec.len();
-        NibbleVec {
-            length,
-            data: vec
-        }
+        NibbleVec { length, data: vec }
     }
 
     /// Returns a byte slice of the nibble vector's contents.
@@ -71,14 +68,17 @@ impl NibbleVec {
     /// **Panics** if `idx >= self.len()`.
     pub fn get(&self, idx: usize) -> u8 {
         if idx >= self.length {
-            panic!("attempted access beyond vector end. len is {}, index is {}", self.length, idx);
+            panic!(
+                "attempted access beyond vector end. len is {}, index is {}",
+                self.length, idx
+            );
         }
         let vec_idx = idx / 2;
         match idx % 2 {
             // If the index is even, take the first (most significant) half of the stored byte.
             0 => self.data[vec_idx] >> 4,
             // If the index is odd, take the second (least significant) half.
-            _ => self.data[vec_idx] & 0x0F
+            _ => self.data[vec_idx] & 0x0F,
         }
     }
 
@@ -108,7 +108,10 @@ impl NibbleVec {
     /// **Panics** if `idx > self.len()`.
     pub fn split(&mut self, idx: usize) -> NibbleVec {
         if idx > self.length {
-            panic!("attempted to split past vector end. len is {}, index is {}", self.length, idx);
+            panic!(
+                "attempted to split past vector end. len is {}, index is {}",
+                self.length, idx
+            );
         } else if idx == self.length {
             NibbleVec::new()
         } else if idx % 2 == 0 {
@@ -128,10 +131,16 @@ impl NibbleVec {
         // the length of the new tail is *odd*.
         let tail_length = self.length - idx;
         let take_last = tail_length % 2 == 1;
-        self.overlap_copy(idx / 2, self.data.len(), &mut tail.data, &mut tail.length, take_last);
+        self.overlap_copy(
+            idx / 2,
+            self.data.len(),
+            &mut tail.data,
+            &mut tail.length,
+            take_last,
+        );
 
         // Remove the copied bytes, being careful to skip the idx byte.
-        for _ in (idx / 2 + 1) .. self.data.len() {
+        for _ in (idx / 2 + 1)..self.data.len() {
             self.data.pop();
         }
 
@@ -157,12 +166,12 @@ impl NibbleVec {
         let mut tail = NibbleVec::from_byte_vec(Vec::with_capacity(tail_vec_size));
 
         // Copy the bytes.
-        for i in half_idx .. self.data.len() {
+        for i in half_idx..self.data.len() {
             tail.data.push(self.data[i]);
         }
 
         // Pop the same bytes.
-        for _ in half_idx .. self.data.len() {
+        for _ in half_idx..self.data.len() {
             self.data.pop();
         }
 
@@ -177,9 +186,16 @@ impl NibbleVec {
     /// self.data[end - 1]. The second half of the last entry is included
     /// if include_last is true.
     #[inline(always)]
-    fn overlap_copy(&self, start: usize, end: usize, vec: &mut Vec<u8>, length: &mut usize, include_last: bool) {
+    fn overlap_copy(
+        &self,
+        start: usize,
+        end: usize,
+        vec: &mut Vec<u8>,
+        length: &mut usize,
+        include_last: bool,
+    ) {
         // Copy up to the first half of the last byte.
-        for i in start .. (end - 1) {
+        for i in start..(end - 1) {
             // The first half is the second half of the old entry.
             let first_half = self.data[i] & 0x0f;
 
@@ -217,7 +233,13 @@ impl NibbleVec {
 
         // Copy the rest of the vector using an overlap copy.
         let take_last = other.len() % 2 == 0;
-        other.overlap_copy(0, other.data.len(), &mut self.data, &mut self.length, take_last);
+        other.overlap_copy(
+            0,
+            other.data.len(),
+            &mut self.data,
+            &mut self.length,
+            take_last,
+        );
 
         self
     }
@@ -225,8 +247,7 @@ impl NibbleVec {
 
 impl PartialEq<NibbleVec> for NibbleVec {
     fn eq(&self, other: &NibbleVec) -> bool {
-        self.length == other.length &&
-        self.data == other.data
+        self.length == other.length && self.data == other.data
     }
 }
 
@@ -257,7 +278,7 @@ impl Debug for NibbleVec {
             write!(fmt, "{}", self.get(0))?;
         }
 
-        for i in 1 .. self.len() {
+        for i in 1..self.len() {
             write!(fmt, ", {}", self.get(i))?;
         }
         write!(fmt, "]")

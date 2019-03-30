@@ -30,10 +30,7 @@ fn push() {
     }
 }
 
-fn split_test(  nibble_vec: &NibbleVec,
-                idx: usize,
-                first: Vec<u8>,
-                second: Vec<u8>) {
+fn split_test(nibble_vec: &NibbleVec, idx: usize, first: Vec<u8>, second: Vec<u8>) {
     let mut init = nibble_vec.clone();
     let tail = init.split(idx);
     assert!(init == first[..]);
