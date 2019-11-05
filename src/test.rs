@@ -1,4 +1,4 @@
-use NibbleVec;
+use crate::NibbleVec;
 
 fn v8_7_6_5() -> NibbleVec {
     NibbleVec::from_byte_vec(vec![8 << 4 | 7, 6 << 4 | 5])

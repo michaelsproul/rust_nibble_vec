@@ -13,6 +13,10 @@ readme = "README.md"
 
 keywords = ["vector", "nibble", "slice", "data-structure", "collection"]
 categories = ["data-structures"]
+edition="2018"
+
+[dependencies]
+smallvec = "1.0"
 
 [dev-dependencies]
 criterion = "0.3"

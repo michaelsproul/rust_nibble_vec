@@ -1,6 +1,8 @@
 #[cfg(test)]
 mod test;
 
+use smallvec::SmallVec;
+
 use std::convert::{From, Into};
 use std::fmt::{self, Debug, Formatter};
 
@@ -19,7 +21,7 @@ use std::fmt::{self, Debug, Formatter};
 #[derive(Clone, Default)]
 pub struct NibbleVec {
     length: usize,
-    data: Vec<u8>,
+    data: SmallVec<[u8; 20]>,
 }
 
 impl NibbleVec {
@@ -27,7 +29,7 @@ impl NibbleVec {
     pub fn new() -> NibbleVec {
         NibbleVec {
             length: 0,
-            data: Vec::new(),
+            data: SmallVec::default(),
         }
     }
 
@@ -36,7 +38,7 @@ impl NibbleVec {
     /// Each byte is split into two 4-bit entries (MSB, LSB).
     pub fn from_byte_vec(vec: Vec<u8>) -> NibbleVec {
         let length = 2 * vec.len();
-        NibbleVec { length, data: vec }
+        NibbleVec { length, data: SmallVec::from(vec) }
     }
 
     /// Returns a byte slice of the nibble vector's contents.
@@ -48,7 +50,7 @@ impl NibbleVec {
     ///
     /// This consumes the nibble vector, so we do not need to copy its contents.
     pub fn into_bytes(self) -> Vec<u8> {
-        self.data
+        self.data.to_vec()
     }
 
     /// Get the number of elements stored in the vector.
@@ -122,7 +124,7 @@ impl NibbleVec {
     }
 
     /// Split function for odd *indices*.
-    #[inline(always)]
+    #[inline]
     fn split_odd(&mut self, idx: usize) -> NibbleVec {
         let tail_vec_size = (self.length - idx) / 2;
         let mut tail = NibbleVec::from_byte_vec(Vec::with_capacity(tail_vec_size));
@@ -154,7 +156,7 @@ impl NibbleVec {
     }
 
     /// Split function for even *indices*.
-    #[inline(always)]
+    #[inline]
     fn split_even(&mut self, idx: usize) -> NibbleVec {
         // Avoid allocating a temporary vector by copying all the bytes in order, then popping them.
 
@@ -190,7 +192,7 @@ impl NibbleVec {
         &self,
         start: usize,
         end: usize,
-        vec: &mut Vec<u8>,
+        vec: &mut SmallVec<[u8; 20]>,
         length: &mut usize,
         include_last: bool,
     ) {
@@ -218,7 +220,7 @@ impl NibbleVec {
         // If the length is even, we can append directly.
         if self.length % 2 == 0 {
             self.length += other.length;
-            self.data.extend(other.data.iter());
+            self.data.extend_from_slice(&other.data);
             return self;
         }
 
@@ -299,12 +301,12 @@ impl<'a> From<&'a [u8]> for NibbleVec {
 
 impl Into<Vec<u8>> for NibbleVec {
     fn into(self) -> Vec<u8> {
-        self.data
+        self.data.to_vec()
     }
 }
 
 impl<'a> Into<Vec<u8>> for &'a NibbleVec {
     fn into(self) -> Vec<u8> {
-        self.data.clone()
+        self.data.to_vec()
     }
 }
