@@ -42,6 +42,7 @@ impl NibbleVec {
     }
 
     /// Returns a byte slice of the nibble vector's contents.
+    #[inline]
     pub fn as_bytes(&self) -> &[u8] {
         &self.data[..]
     }
@@ -49,16 +50,19 @@ impl NibbleVec {
     /// Converts a nibble vector into a byte vector.
     ///
     /// This consumes the nibble vector, so we do not need to copy its contents.
+    #[inline]
     pub fn into_bytes(self) -> Vec<u8> {
         self.data.to_vec()
     }
 
     /// Get the number of elements stored in the vector.
+    #[inline]
     pub fn len(&self) -> usize {
         self.length
     }
 
     /// Returns `true` if the nibble vector has a length of 0.
+    #[inline]
     pub fn is_empty(&self) -> bool {
         self.data.is_empty()
     }
@@ -68,6 +72,7 @@ impl NibbleVec {
     /// Guaranteed to be a value in the interval [0, 15].
     ///
     /// **Panics** if `idx >= self.len()`.
+    #[inline]
     pub fn get(&self, idx: usize) -> u8 {
         if idx >= self.length {
             panic!(
@@ -87,6 +92,7 @@ impl NibbleVec {
     /// Add a single nibble to the vector.
     ///
     /// Only the 4 least-significant bits of the value are used.
+    #[inline]
     pub fn push(&mut self, val: u8) {
         if self.length % 2 == 0 {
             self.data.push(val << 4);
@@ -187,7 +193,7 @@ impl NibbleVec {
     /// Copy data between the second half of self.data[start] and
     /// self.data[end - 1]. The second half of the last entry is included
     /// if include_last is true.
-    #[inline(always)]
+    #[inline]
     fn overlap_copy(
         &self,
         start: usize,
@@ -216,6 +222,7 @@ impl NibbleVec {
     }
 
     /// Append another nibble vector whilst consuming this vector.
+    #[inline]
     pub fn join(mut self, other: &NibbleVec) -> NibbleVec {
         // If the length is even, we can append directly.
         if self.length % 2 == 0 {
@@ -288,24 +295,28 @@ impl Debug for NibbleVec {
 }
 
 impl From<Vec<u8>> for NibbleVec {
+    #[inline]
     fn from(v: Vec<u8>) -> NibbleVec {
         NibbleVec::from_byte_vec(v)
     }
 }
 
 impl<'a> From<&'a [u8]> for NibbleVec {
+    #[inline]
     fn from(v: &[u8]) -> NibbleVec {
         NibbleVec::from_byte_vec(v.into())
     }
 }
 
 impl Into<Vec<u8>> for NibbleVec {
+    #[inline]
     fn into(self) -> Vec<u8> {
         self.data.to_vec()
     }
 }
 
 impl<'a> Into<Vec<u8>> for &'a NibbleVec {
+    #[inline]
     fn into(self) -> Vec<u8> {
         self.data.to_vec()
     }
