@@ -14,5 +14,15 @@ readme = "README.md"
 keywords = ["vector", "nibble", "slice", "data-structure", "collection"]
 categories = ["data-structures"]
 
+[dev-dependencies]
+criterion = "0.3"
+
+[[bench]]
+name = "nib_bench"
+harness = false
+
+[lib]
+bench = false
+
 [badges]
 travis-ci = { repository = "michaelsproul/rust_nibble_vec" }
