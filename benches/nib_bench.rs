@@ -77,6 +77,7 @@ criterion_group!(
     nib_split_even_bench,
     nib_make_split_bench,
     nib_join_bench,
-    nib_get_bench
+    nib_get_bench,
+    nib_from_into_bench
 );
 criterion_main!(benches);
