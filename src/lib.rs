@@ -36,6 +36,7 @@ impl NibbleVec {
     /// Create a nibble vector from a vector of bytes.
     ///
     /// Each byte is split into two 4-bit entries (MSB, LSB).
+    #[inline]
     pub fn from_byte_vec(vec: Vec<u8>) -> NibbleVec {
         let length = 2 * vec.len();
         NibbleVec { length, data: SmallVec::from(vec) }
@@ -255,6 +256,7 @@ impl NibbleVec {
 }
 
 impl PartialEq<NibbleVec> for NibbleVec {
+    #[inline]
     fn eq(&self, other: &NibbleVec) -> bool {
         self.length == other.length && self.data == other.data
     }
@@ -265,6 +267,7 @@ impl Eq for NibbleVec {}
 /// Compare a `NibbleVec` and a slice of bytes *element-by-element*.
 /// Bytes are **not** interpreted as two `NibbleVec` entries.
 impl PartialEq<[u8]> for NibbleVec {
+    #[inline]
     fn eq(&self, other: &[u8]) -> bool {
         if other.len() != self.len() {
             return false;
@@ -295,28 +298,24 @@ impl Debug for NibbleVec {
 }
 
 impl From<Vec<u8>> for NibbleVec {
-    #[inline]
     fn from(v: Vec<u8>) -> NibbleVec {
         NibbleVec::from_byte_vec(v)
     }
 }
 
 impl<'a> From<&'a [u8]> for NibbleVec {
-    #[inline]
     fn from(v: &[u8]) -> NibbleVec {
         NibbleVec::from_byte_vec(v.into())
     }
 }
 
 impl Into<Vec<u8>> for NibbleVec {
-    #[inline]
     fn into(self) -> Vec<u8> {
         self.data.to_vec()
     }
 }
 
 impl<'a> Into<Vec<u8>> for &'a NibbleVec {
-    #[inline]
     fn into(self) -> Vec<u8> {
         self.data.to_vec()
     }

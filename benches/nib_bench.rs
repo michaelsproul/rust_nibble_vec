@@ -72,12 +72,26 @@ fn nib_from_into_bench(b: &mut Criterion) {
     });
 }
 
+fn nib_cmp_bench(b: &mut Criterion) {
+    b.bench_function("bench eq and not eq", |b| {
+        let nv = NibbleVec::from_byte_vec(vec![10, 11, 12, 13, 14, 15, 16]);
+        let nv_eq = NibbleVec::from_byte_vec(vec![10, 11, 12, 13, 14, 15, 16]);
+        let nv_not_eq = NibbleVec::from_byte_vec(vec![1, 1, 2, 3, 4, 5, 6]);
+        b.iter(|| {
+            let _a = nv == nv_eq;
+            let _b = nv == nv_not_eq;
+            let _c = nv_eq != nv_not_eq;
+        });
+    });
+}
+
 criterion_group!(
     benches,
     nib_split_even_bench,
     nib_make_split_bench,
     nib_join_bench,
     nib_get_bench,
-    nib_from_into_bench
+    nib_from_into_bench,
+    nib_cmp_bench
 );
 criterion_main!(benches);
