@@ -3,6 +3,7 @@ mod test;
 
 use smallvec::SmallVec;
 
+use std::iter::FromIterator;
 use std::convert::{From, Into};
 use std::fmt::{self, Debug, Formatter};
 
@@ -29,7 +30,7 @@ impl NibbleVec {
     pub fn new() -> NibbleVec {
         NibbleVec {
             length: 0,
-            data: SmallVec::default(),
+            data: SmallVec::new(),
         }
     }
 
@@ -39,7 +40,7 @@ impl NibbleVec {
     #[inline]
     pub fn from_byte_vec(vec: Vec<u8>) -> NibbleVec {
         let length = 2 * vec.len();
-        NibbleVec { length, data: SmallVec::from(vec) }
+        NibbleVec { length, data: SmallVec::from_iter(vec) }
     }
 
     /// Returns a byte slice of the nibble vector's contents.
