@@ -18,14 +18,14 @@ fn split_test(nibble_vec: &NibbleVec, idx: usize) {
 
 fn nib_split_even(b: &mut Criterion) {
     let even_length = even_8to5();
-    b.bench_function("make nib vec", |b| b.iter(|| {
+    b.bench_function("split even not including building the vec", |b| b.iter(|| {
         split_test(&even_length, 1);
         split_test(&even_length, 2);
     }));
 }
 
 fn nib_make_split(b: &mut Criterion) {
-    b.bench_function("nib_make_split", |b| {
+    b.bench_function("nib build nibvec split odd len", |b| {
         b.iter(|| {
             let odd_length = odd_11to9();
             split_test(&odd_length, 0);
@@ -35,7 +35,7 @@ fn nib_make_split(b: &mut Criterion) {
 }
 
 fn nib_get(b: &mut Criterion) {
-    b.bench_function("nib_make_split", |b| {
+    b.bench_function("nib get on vec of 9 elements", |b| {
         let v = vec![243, 2, 3, 251, 5, 6, 7, 8, 255];
         let nv = NibbleVec::from(v.clone());
         b.iter(|| {
@@ -51,7 +51,7 @@ fn join_test(vec1: &NibbleVec, vec2: &NibbleVec) {
 }
 
 fn nib_join_test(b: &mut Criterion) {
-    b.bench_function("trie remove", |b| {
+    b.bench_function("join even nibvec to odd nib", |b| {
         b.iter(|| {
             let v1 = even_8to5();
             let v2 = odd_11to9();
