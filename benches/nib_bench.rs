@@ -1,17 +1,17 @@
 use criterion::{criterion_group, criterion_main, Criterion};
-use nibble_vec::NibbleVec;
+use nibble_vec::{Nibblet, NibbleVec};
 
-fn even_8to5() -> NibbleVec {
-    NibbleVec::from_byte_vec(vec![8 << 4 | 7, 6 << 4 | 5])
+fn even_8to5() -> Nibblet {
+    Nibblet::from_byte_vec(vec![8 << 4 | 7, 6 << 4 | 5])
 }
 
-fn odd_11to9() -> NibbleVec {
-    let mut result = NibbleVec::from_byte_vec(vec![11 << 4 | 10]);
+fn odd_11to9() -> Nibblet {
+    let mut result = Nibblet::from_byte_vec(vec![11 << 4 | 10]);
     result.push(9);
     result
 }
 
-fn split_test(nibble_vec: &NibbleVec, idx: usize) {
+fn split_test(nibble_vec: &Nibblet, idx: usize) {
     let mut init = nibble_vec.clone();
     let _tail = init.split(idx);
 }
@@ -39,7 +39,7 @@ fn nib_make_split_bench(b: &mut Criterion) {
 fn nib_get_bench(b: &mut Criterion) {
     b.bench_function("nib get on vec of 9 elements", |b| {
         let v = vec![243, 2, 3, 251, 5, 6, 7, 8, 255];
-        let nv = NibbleVec::from(v.clone());
+        let nv = Nibblet::from(v.clone());
         b.iter(|| {
             for (i, _) in v.iter().enumerate() {
                 nv.get(i);
@@ -48,7 +48,7 @@ fn nib_get_bench(b: &mut Criterion) {
     });
 }
 
-fn join_test(vec1: &NibbleVec, vec2: &NibbleVec) {
+fn join_test(vec1: &Nibblet, vec2: &Nibblet) {
     let _joined = vec1.clone().join(vec2);
 }
 
@@ -67,18 +67,18 @@ fn nib_from_into_bench(b: &mut Criterion) {
     b.bench_function("nib from vec and into vec", |b| {
         b.iter(|| {
             let x = vec![10, 11, 12, 13, 14, 15, 16];
-            let nv = NibbleVec::from_byte_vec(x);
+            let nv = Nibblet::from_byte_vec(x);
             let v: Vec<u8> = nv.into();
-            let _nv2 = NibbleVec::from(v);
+            let _nv2 = Nibblet::from(v);
         });
     });
 }
 
 fn nib_cmp_bench(b: &mut Criterion) {
     b.bench_function("bench eq and not eq", |b| {
-        let nv = NibbleVec::from_byte_vec(vec![10, 11, 12, 13, 14, 15, 16]);
-        let nv_eq = NibbleVec::from_byte_vec(vec![10, 11, 12, 13, 14, 15, 16]);
-        let nv_not_eq = NibbleVec::from_byte_vec(vec![1, 1, 2, 3, 4, 5, 6]);
+        let nv = Nibblet::from_byte_vec(vec![10, 11, 12, 13, 14, 15, 16]);
+        let nv_eq = Nibblet::from_byte_vec(vec![10, 11, 12, 13, 14, 15, 16]);
+        let nv_not_eq = Nibblet::from_byte_vec(vec![1, 1, 2, 3, 4, 5, 6]);
         b.iter(|| {
             let _a = nv == nv_eq;
             let _b = nv == nv_not_eq;

@@ -1,11 +1,14 @@
 #[cfg(test)]
 mod test;
 
-use smallvec::SmallVec;
+use smallvec::{Array, SmallVec};
 
 use std::convert::{From, Into};
 use std::fmt::{self, Debug, Formatter};
 use std::iter::FromIterator;
+
+/// Type for easy use if you don't want generics all over the place.
+pub type Nibblet = NibbleVec<[u8; 64]>;
 
 /// A data-structure for storing a sequence of 4-bit values.
 ///
@@ -20,14 +23,14 @@ use std::iter::FromIterator;
 ///
 /// [msb-wiki]: http://en.wikipedia.org/wiki/Most_significant_bit
 #[derive(Clone, Default)]
-pub struct NibbleVec {
+pub struct NibbleVec<A: Array<Item=u8>> {
     length: usize,
-    data: SmallVec<[u8; 20]>,
+    data: SmallVec<A>,
 }
-// TODO add trait to make size generic
-impl NibbleVec {
+
+impl<A: Array<Item=u8>> NibbleVec<A> {
     /// Create an empty nibble vector.
-    pub fn new() -> NibbleVec {
+    pub fn new() -> NibbleVec<A> {
         NibbleVec {
             length: 0,
             data: SmallVec::new(),
@@ -38,7 +41,7 @@ impl NibbleVec {
     ///
     /// Each byte is split into two 4-bit entries (MSB, LSB).
     #[inline]
-    pub fn from_byte_vec(vec: Vec<u8>) -> NibbleVec {
+    pub fn from_byte_vec(vec: Vec<u8>) -> NibbleVec<A> {
         let length = 2 * vec.len();
         NibbleVec {
             length,
@@ -50,7 +53,7 @@ impl NibbleVec {
     ///
     /// Each byte is split into two 4-bit entries (MSB, LSB).
     #[inline]
-    pub fn from_small_vec(length: usize) -> NibbleVec {
+    pub fn from_small_vec(length: usize) -> NibbleVec<A> {
         NibbleVec {
             length,
             data: SmallVec::new(),
@@ -92,7 +95,7 @@ impl NibbleVec {
     pub fn get(&self, idx: usize) -> u8 {
         if idx >= self.length {
             panic!(
-                "attempted access beyond vector end. len is {}, index is {}",
+                "NibbleVec index out of bounds: len is {}, index is {}",
                 self.length, idx
             );
         }
@@ -130,7 +133,7 @@ impl NibbleVec {
     /// with exactly `idx` elements remaining in this vector.
     ///
     /// **Panics** if `idx > self.len()`.
-    pub fn split(&mut self, idx: usize) -> NibbleVec {
+    pub fn split(&mut self, idx: usize) -> NibbleVec<A> {
         if idx > self.length {
             panic!(
                 "attempted to split past vector end. len is {}, index is {}",
@@ -147,8 +150,8 @@ impl NibbleVec {
 
     /// Split function for odd *indices*.
     #[inline]
-    fn split_odd(&mut self, idx: usize) -> NibbleVec {
-        let tail_vec_size = (self.length - idx) / 2;
+    fn split_odd(&mut self, idx: usize) -> NibbleVec<A> {
+        // let tail_vec_size = (self.length - idx) / 2;
         let mut tail = NibbleVec::from_small_vec(0);
 
         // Perform an overlap copy, copying the last nibble of the original vector only if
@@ -179,13 +182,14 @@ impl NibbleVec {
 
     /// Split function for even *indices*.
     #[inline]
-    fn split_even(&mut self, idx: usize) -> NibbleVec {
+    fn split_even(&mut self, idx: usize) -> NibbleVec<A> {
         // Avoid allocating a temporary vector by copying all the bytes in order, then popping them.
 
         // Possible to prove: l_d - ⌊i / 2⌋ = ⌊(l_v - i + 1) / 2⌋
         //  where l_d = self.data.len()
         //        l_v = self.length
-        let tail_vec_size = (self.length - idx + 1) / 2;
+        
+        // let tail_vec_size = (self.length - idx + 1) / 2;
         let half_idx = idx / 2;
         let mut tail = NibbleVec::from_small_vec(0);
 
@@ -214,7 +218,7 @@ impl NibbleVec {
         &self,
         start: usize,
         end: usize,
-        vec: &mut SmallVec<[u8; 20]>,
+        vec: &mut SmallVec<A>,
         length: &mut usize,
         include_last: bool,
     ) {
@@ -239,7 +243,7 @@ impl NibbleVec {
 
     /// Append another nibble vector whilst consuming this vector.
     #[inline]
-    pub fn join(mut self, other: &NibbleVec) -> NibbleVec {
+    pub fn join(mut self, other: &NibbleVec<A>) -> NibbleVec<A> {
         // If the length is even, we can append directly.
         if self.length % 2 == 0 {
             self.length += other.length;
@@ -270,18 +274,18 @@ impl NibbleVec {
     }
 }
 
-impl PartialEq<NibbleVec> for NibbleVec {
+impl<A: Array<Item=u8>> PartialEq<NibbleVec<A>> for NibbleVec<A> {
     #[inline]
-    fn eq(&self, other: &NibbleVec) -> bool {
+    fn eq(&self, other: &NibbleVec<A>) -> bool {
         self.length == other.length && self.data == other.data
     }
 }
 
-impl Eq for NibbleVec {}
+impl<A: Array<Item=u8>> Eq for NibbleVec<A> {}
 
 /// Compare a `NibbleVec` and a slice of bytes *element-by-element*.
 /// Bytes are **not** interpreted as two `NibbleVec` entries.
-impl PartialEq<[u8]> for NibbleVec {
+impl<A: Array<Item=u8>> PartialEq<[u8]> for NibbleVec<A> {
     #[inline]
     fn eq(&self, other: &[u8]) -> bool {
         if other.len() != self.len() {
@@ -297,7 +301,7 @@ impl PartialEq<[u8]> for NibbleVec {
     }
 }
 
-impl Debug for NibbleVec {
+impl<A: Array<Item=u8>> Debug for NibbleVec<A> {
     fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
         write!(fmt, "NibbleVec [")?;
 
@@ -312,28 +316,28 @@ impl Debug for NibbleVec {
     }
 }
 
-impl From<Vec<u8>> for NibbleVec {
+impl<A: Array<Item=u8>> From<Vec<u8>> for NibbleVec<A> {
     #[inline]
-    fn from(v: Vec<u8>) -> NibbleVec {
+    fn from(v: Vec<u8>) -> NibbleVec<A> {
         NibbleVec::from_byte_vec(v)
     }
 }
 
-impl<'a> From<&'a [u8]> for NibbleVec {
+impl<'a, A: Array<Item=u8>> From<&'a [u8]> for NibbleVec<A> {
     #[inline]
-    fn from(v: &[u8]) -> NibbleVec {
+    fn from(v: &[u8]) -> NibbleVec<A> {
         NibbleVec::from_byte_vec(v.into())
     }
 }
 
-impl Into<Vec<u8>> for NibbleVec {
+impl<A: Array<Item=u8>> Into<Vec<u8>> for NibbleVec<A> {
     #[inline]
     fn into(self) -> Vec<u8> {
         self.data.to_vec()
     }
 }
 
-impl<'a> Into<Vec<u8>> for &'a NibbleVec {
+impl<'a, A: Array<Item=u8>> Into<Vec<u8>> for &'a NibbleVec<A> {
     #[inline]
     fn into(self) -> Vec<u8> {
         self.data.to_vec()
