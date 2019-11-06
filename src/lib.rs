@@ -23,12 +23,12 @@ pub type Nibblet = NibbleVec<[u8; 64]>;
 ///
 /// [msb-wiki]: http://en.wikipedia.org/wiki/Most_significant_bit
 #[derive(Clone, Default)]
-pub struct NibbleVec<A: Array<Item=u8>> {
+pub struct NibbleVec<A: Array<Item = u8>> {
     length: usize,
     data: SmallVec<A>,
 }
 
-impl<A: Array<Item=u8>> NibbleVec<A> {
+impl<A: Array<Item = u8>> NibbleVec<A> {
     /// Create an empty nibble vector.
     pub fn new() -> NibbleVec<A> {
         NibbleVec {
@@ -188,7 +188,7 @@ impl<A: Array<Item=u8>> NibbleVec<A> {
         // Possible to prove: l_d - ⌊i / 2⌋ = ⌊(l_v - i + 1) / 2⌋
         //  where l_d = self.data.len()
         //        l_v = self.length
-        
+
         // let tail_vec_size = (self.length - idx + 1) / 2;
         let half_idx = idx / 2;
         let mut tail = NibbleVec::from_small_vec(0);
@@ -274,18 +274,18 @@ impl<A: Array<Item=u8>> NibbleVec<A> {
     }
 }
 
-impl<A: Array<Item=u8>> PartialEq<NibbleVec<A>> for NibbleVec<A> {
+impl<A: Array<Item = u8>> PartialEq<NibbleVec<A>> for NibbleVec<A> {
     #[inline]
     fn eq(&self, other: &NibbleVec<A>) -> bool {
         self.length == other.length && self.data == other.data
     }
 }
 
-impl<A: Array<Item=u8>> Eq for NibbleVec<A> {}
+impl<A: Array<Item = u8>> Eq for NibbleVec<A> {}
 
 /// Compare a `NibbleVec` and a slice of bytes *element-by-element*.
 /// Bytes are **not** interpreted as two `NibbleVec` entries.
-impl<A: Array<Item=u8>> PartialEq<[u8]> for NibbleVec<A> {
+impl<A: Array<Item = u8>> PartialEq<[u8]> for NibbleVec<A> {
     #[inline]
     fn eq(&self, other: &[u8]) -> bool {
         if other.len() != self.len() {
@@ -301,7 +301,7 @@ impl<A: Array<Item=u8>> PartialEq<[u8]> for NibbleVec<A> {
     }
 }
 
-impl<A: Array<Item=u8>> Debug for NibbleVec<A> {
+impl<A: Array<Item = u8>> Debug for NibbleVec<A> {
     fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
         write!(fmt, "NibbleVec [")?;
 
@@ -316,28 +316,28 @@ impl<A: Array<Item=u8>> Debug for NibbleVec<A> {
     }
 }
 
-impl<A: Array<Item=u8>> From<Vec<u8>> for NibbleVec<A> {
+impl<A: Array<Item = u8>> From<Vec<u8>> for NibbleVec<A> {
     #[inline]
     fn from(v: Vec<u8>) -> NibbleVec<A> {
         NibbleVec::from_byte_vec(v)
     }
 }
 
-impl<'a, A: Array<Item=u8>> From<&'a [u8]> for NibbleVec<A> {
+impl<'a, A: Array<Item = u8>> From<&'a [u8]> for NibbleVec<A> {
     #[inline]
     fn from(v: &[u8]) -> NibbleVec<A> {
         NibbleVec::from_byte_vec(v.into())
     }
 }
 
-impl<A: Array<Item=u8>> Into<Vec<u8>> for NibbleVec<A> {
+impl<A: Array<Item = u8>> Into<Vec<u8>> for NibbleVec<A> {
     #[inline]
     fn into(self) -> Vec<u8> {
         self.data.to_vec()
     }
 }
 
-impl<'a, A: Array<Item=u8>> Into<Vec<u8>> for &'a NibbleVec<A> {
+impl<'a, A: Array<Item = u8>> Into<Vec<u8>> for &'a NibbleVec<A> {
     #[inline]
     fn into(self) -> Vec<u8> {
         self.data.to_vec()

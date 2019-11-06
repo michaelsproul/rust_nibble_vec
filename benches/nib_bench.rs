@@ -1,5 +1,5 @@
 use criterion::{criterion_group, criterion_main, Criterion};
-use nibble_vec::{Nibblet, NibbleVec};
+use nibble_vec::{NibbleVec, Nibblet};
 
 fn even_8to5() -> Nibblet {
     Nibblet::from_byte_vec(vec![8 << 4 | 7, 6 << 4 | 5])
