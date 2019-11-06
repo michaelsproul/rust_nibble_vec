@@ -18,10 +18,12 @@ fn split_test(nibble_vec: &NibbleVec, idx: usize) {
 
 fn nib_split_even_bench(b: &mut Criterion) {
     let even_length = even_8to5();
-    b.bench_function("nibvec split even", |b| b.iter(|| {
-        split_test(&even_length, 1);
-        split_test(&even_length, 2);
-    }));
+    b.bench_function("nibvec split even", |b| {
+        b.iter(|| {
+            split_test(&even_length, 1);
+            split_test(&even_length, 2);
+        })
+    });
 }
 
 fn nib_make_split_bench(b: &mut Criterion) {

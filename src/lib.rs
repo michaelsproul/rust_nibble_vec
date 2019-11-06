@@ -3,9 +3,9 @@ mod test;
 
 use smallvec::SmallVec;
 
-use std::iter::FromIterator;
 use std::convert::{From, Into};
 use std::fmt::{self, Debug, Formatter};
+use std::iter::FromIterator;
 
 /// A data-structure for storing a sequence of 4-bit values.
 ///
@@ -40,7 +40,10 @@ impl NibbleVec {
     #[inline]
     pub fn from_byte_vec(vec: Vec<u8>) -> NibbleVec {
         let length = 2 * vec.len();
-        NibbleVec { length, data: SmallVec::from_iter(vec) }
+        NibbleVec {
+            length,
+            data: SmallVec::from_iter(vec),
+        }
     }
 
     /// Create a nibble vector from a `SmallVec` of Size.
@@ -48,7 +51,10 @@ impl NibbleVec {
     /// Each byte is split into two 4-bit entries (MSB, LSB).
     #[inline]
     pub fn from_small_vec(length: usize) -> NibbleVec {
-        NibbleVec { length, data: SmallVec::new() }
+        NibbleVec {
+            length,
+            data: SmallVec::new(),
+        }
     }
 
     /// Returns a byte slice of the nibble vector's contents.
