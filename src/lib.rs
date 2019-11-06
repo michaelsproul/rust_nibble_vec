@@ -149,7 +149,7 @@ impl NibbleVec {
     #[inline]
     fn split_odd(&mut self, idx: usize) -> NibbleVec {
         let tail_vec_size = (self.length - idx) / 2;
-        let mut tail = NibbleVec::from_small_vec(tail_vec_size);
+        let mut tail = NibbleVec::from_small_vec(0);
 
         // Perform an overlap copy, copying the last nibble of the original vector only if
         // the length of the new tail is *odd*.
@@ -187,7 +187,7 @@ impl NibbleVec {
         //        l_v = self.length
         let tail_vec_size = (self.length - idx + 1) / 2;
         let half_idx = idx / 2;
-        let mut tail = NibbleVec::from_small_vec(tail_vec_size);
+        let mut tail = NibbleVec::from_small_vec(0);
 
         // Copy the bytes.
         for i in half_idx..self.data.len() {
