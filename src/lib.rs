@@ -7,7 +7,8 @@ use std::convert::{From, Into};
 use std::fmt::{self, Debug, Formatter};
 use std::iter::FromIterator;
 
-/// Type for easy use if you don't want generics all over the place.
+/// A `NibbleVec` backed by a `SmallVec` with 64 inline element slots.
+/// This will not allocate until more than 64 elements are added.
 pub type Nibblet = NibbleVec<[u8; 64]>;
 
 /// A data-structure for storing a sequence of 4-bit values.
