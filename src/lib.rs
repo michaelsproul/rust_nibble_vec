@@ -135,6 +135,7 @@ impl<A: Array<Item = u8>> NibbleVec<A> {
     ///
     /// **Panics** if `idx > self.len()`.
     pub fn split(&mut self, idx: usize) -> NibbleVec<A> {
+        // assert! is a few percent slower surprisingly
         if idx > self.length {
             panic!(
                 "attempted to split past vector end. len is {}, index is {}",
