@@ -50,17 +50,6 @@ impl<A: Array<Item = u8>> NibbleVec<A> {
         }
     }
 
-    /// Create a nibble vector from a `SmallVec` of Size.
-    ///
-    /// Each byte is split into two 4-bit entries (MSB, LSB).
-    #[inline]
-    pub fn from_small_vec(length: usize) -> NibbleVec<A> {
-        NibbleVec {
-            length,
-            data: SmallVec::new(),
-        }
-    }
-
     /// Returns a byte slice of the nibble vector's contents.
     #[inline]
     pub fn as_bytes(&self) -> &[u8] {
@@ -153,8 +142,7 @@ impl<A: Array<Item = u8>> NibbleVec<A> {
     /// Split function for odd *indices*.
     #[inline]
     fn split_odd(&mut self, idx: usize) -> NibbleVec<A> {
-        // let tail_vec_size = (self.length - idx) / 2;
-        let mut tail = NibbleVec::from_small_vec(0);
+        let mut tail = NibbleVec::new();
 
         // Perform an overlap copy, copying the last nibble of the original vector only if
         // the length of the new tail is *odd*.
@@ -191,9 +179,8 @@ impl<A: Array<Item = u8>> NibbleVec<A> {
         //  where l_d = self.data.len()
         //        l_v = self.length
 
-        // let tail_vec_size = (self.length - idx + 1) / 2;
         let half_idx = idx / 2;
-        let mut tail = NibbleVec::from_small_vec(0);
+        let mut tail = NibbleVec::new();
 
         // Copy the bytes.
         for i in half_idx..self.data.len() {
