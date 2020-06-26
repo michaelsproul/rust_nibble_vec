@@ -19,7 +19,7 @@ You can use it in your own projects by adding `nibble_vec` as a dependency in yo
 
 ```toml
 [dependencies]
-nibble_vec = "0.0.3"
+nibble_vec = "0.0.4"
 ```
 
 ## Documentation
