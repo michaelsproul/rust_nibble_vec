@@ -19,7 +19,7 @@ You can use it in your own projects by adding `nibble_vec` as a dependency in yo
 
 ```toml
 [dependencies]
-nibble_vec = "0.0.4"
+nibble_vec = "0.0.5"
 ```
 
 ## Documentation
@@ -28,6 +28,15 @@ API documentation is available here:
 
 https://docs.rs/nibble_vec
 
+## Contributors
+
+Made by:
+
+* Alexander Andreev ([@andreevlex](https://github.com/andreevlex))
+* Devin Ragotzy ([@DevinR528](https://github.com/DevinR528))
+* Michael Sproul ([@michaelsproul](https://github.com/michaelsproul))
+* Vinzent Steinberg ([@vks](https://github.com/vks))
+
 ## License
 
-MIT License. Copyright © Michael Sproul and contributors 2015-2017.
+MIT License. Copyright © Michael Sproul and contributors 2015-present.
